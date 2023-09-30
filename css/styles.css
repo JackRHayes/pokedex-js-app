@@ -6,7 +6,8 @@ body, h1, h2, h3, p {
 
 /* Apply a font stack (replace with your preferred font) */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Crimson Text', serif;
+
 }
 
 /* Style for header */
