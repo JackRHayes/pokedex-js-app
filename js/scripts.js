@@ -1,7 +1,26 @@
 // Wrap your code in an immediately-invoked function expression (IIFE) to create a private scope.
 const pokemonRepository = (function () {
     // Array containing Pokémon objects
-    const pokemonList = [];
+    const pokemonList = [
+        {
+            name: "Charizard",
+            type: ['fire', 'Flying'],
+            species: 'Lizard',
+            height: 1.7
+        },
+        {
+            name: "Pikachu",
+            type: ['Electric'],
+            species: 'Mouse',
+            height: 0.4
+        },
+        {
+            name: "Squirtle",
+            type: ['Water'],
+            species: 'Turtle',
+            height: 0.5
+        }
+    ];
 
     // Get the ul element with the class 'pokemon-list'
     const pokemonListElement = document.querySelector('.pokemon-list');
