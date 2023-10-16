@@ -1,26 +1,17 @@
-// Wrap your code in an immediately-invoked function expression (IIFE) to create a private scope.
+const loadingMessage = document.querySelector('.loading-message');
+
+function showLoadingMessage() {
+  loadingMessage.style.display = 'block';
+}
+
+function hideLoadingMessage() {
+  loadingMessage.style.display = 'none';
+}
+
 const pokemonRepository = (function () {
     // Array containing Pokémon objects
-    const pokemonList = [
-        {
-            name: "Charizard",
-            type: ['fire', 'Flying'],
-            species: 'Lizard',
-            height: 1.7
-        },
-        {
-            name: "Pikachu",
-            type: ['Electric'],
-            species: 'Mouse',
-            height: 0.4
-        },
-        {
-            name: "Squirtle",
-            type: ['Water'],
-            species: 'Turtle',
-            height: 0.5
-        }
-    ];
+    const pokemonList = [];
+    const apiUrl = 'https://pokeapi.co/api/v2/pokemon/';
 
     // Get the ul element with the class 'pokemon-list'
     const pokemonListElement = document.querySelector('.pokemon-list');
@@ -43,9 +34,7 @@ const pokemonRepository = (function () {
         return (
             typeof pokemon === 'object' &&
             'name' in pokemon &&
-            'type' in pokemon &&
-            'species' in pokemon &&
-            'height' in pokemon
+            'detailsUrl' in pokemon
         );
     }
 
@@ -74,7 +63,9 @@ const pokemonRepository = (function () {
     }
 
     function showDetails(pokemon) {
-        console.log(pokemon); // Log Pokémon details (you can do more with this function later)
+        loadDetails(pokemon).then(function () {
+            console.log(pokemon); // Log Pokémon details
+        });
     }
 
     function addListItem(pokemon) {
@@ -84,15 +75,54 @@ const pokemonRepository = (function () {
         pokemonListElement.appendChild(listItem);
     }
 
+    function loadList() {
+        return fetch(apiUrl)
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                data.results.forEach(function (item) {
+                    const pokemon = {
+                        name: item.name,
+                        detailsUrl: item.url,
+                    };
+                    add(pokemon);
+                });
+            })
+            .catch(function (error) {
+                console.error(error);
+            });
+    }
+
+    function loadDetails(pokemon) {
+        const url = pokemon.detailsUrl;
+        return fetch(url)
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (details) {
+                pokemon.imgUrl = details.sprites.front_default;
+                pokemon.height = details.height;
+                // Add more details if needed
+            })
+            .catch(function (error) {
+                console.error(error);
+            });
+    }
+
     // Return the public functions and variables
     return {
         getAll: getAll,
         add: add,
         addListItem: addListItem,
+        loadList: loadList,
+        loadDetails: loadDetails,
     };
 })();
 
-// Iterate over the Pokémon list using forEach and add them to the list
-pokemonRepository.getAll().forEach(function (pokemon) {
-    pokemonRepository.addListItem(pokemon);
+// Call the LoadList() function and then execute getAll from the pokemonRepository
+pokemonRepository.loadList().then(function () {
+    pokemonRepository.getAll().forEach(function (pokemon) {
+        pokemonRepository.addListItem(pokemon);
+    });
 });
